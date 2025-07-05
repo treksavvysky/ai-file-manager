@@ -20,6 +20,7 @@ Usage:
 """
 
 from .file_handler import FileHandler
+from .workspace_manager import WorkspaceManager
 from .exceptions import (
     FileManagerError,
     PathValidationError,
@@ -40,6 +41,7 @@ __description__ = "Modular file management system for AI agents"
 
 __all__ = [
     "FileHandler",
+    "WorkspaceManager",
     "FileManagerError",
     "PathValidationError", 
     "FileOperationError",
