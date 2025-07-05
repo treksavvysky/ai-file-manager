@@ -6,9 +6,11 @@ A modular file management system designed for AI agents to perform safe and effi
 
 ```
 ai-file-manager/
-├── file_handler.py      # Core file operations module
-├── README.md           # This file
-└── tests/              # Unit tests (to be created)
+├── __init__.py         # Package initialization
+├── file_handler.py     # Core file operations module
+├── exceptions.py       # Custom exception classes
+├── README.md          # This file
+└── tests/             # Unit tests (to be created)
 ```
 
 ## Features
@@ -17,8 +19,18 @@ ai-file-manager/
 - **Modular Design**: Small, focused class for basic file operations
 - **Security**: Path validation and base directory restrictions
 - **Audit Trail**: Operation logging for transparency
-- **Error Handling**: Comprehensive exception handling
+- **Custom Exceptions**: Specific error types for different failure modes
+- **Size Limits**: Configurable file size constraints
 - **Type Hints**: Full type annotations for better code clarity
+
+### Custom Exception System
+- **FileManagerError**: Base exception for all file manager errors
+- **PathValidationError**: Invalid or restricted file paths
+- **FileOperationError**: System-level operation failures
+- **SecurityError**: Security constraint violations
+- **FileSizeError**: File size limit violations
+- **EncodingError**: Character encoding issues
+- **InvalidFileTypeError**: Unsupported file type operations
 
 ### Supported Operations
 - `read_file()` - Read file content
@@ -31,24 +43,39 @@ ai-file-manager/
 ## Quick Start
 
 ```python
-from file_handler import FileHandler
+from ai_file_manager import FileHandler
+from ai_file_manager.exceptions import FileManagerError, FileSizeError
 
-# Initialize handler
-handler = FileHandler(base_directory="/path/to/safe/directory")
+# Initialize handler with security constraints
+handler = FileHandler(
+    base_directory="/path/to/safe/directory",
+    max_file_size=1024*1024  # 1MB limit
+)
 
-# Basic operations
-handler.write_file("example.txt", "Hello World!")
-content = handler.read_file("example.txt")
-handler.append_file("example.txt", "\nAppended text")
+try:
+    # Basic operations
+    handler.write_file("example.txt", "Hello World!")
+    content = handler.read_file("example.txt")
+    handler.append_file("example.txt", "\nAppended text")
+    
+    # Check operations
+    if handler.file_exists("example.txt"):
+        info = handler.get_file_info("example.txt")
+        print(f"File size: {info['size']} bytes")
+    
+except FileSizeError as e:
+    print(f"File too large: {e}")
+except FileManagerError as e:
+    print(f"File operation failed: {e}")
 
-# Check operations
-if handler.file_exists("example.txt"):
-    info = handler.get_file_info("example.txt")
-    print(f"File size: {info['size']} bytes")
+# View audit log with error filtering
+for entry in handler.get_operation_log(filter_by_success=False):
+    print(f"Failed {entry['operation']}: {entry['error_type']}")
 
-# View audit log
-for entry in handler.get_operation_log():
-    print(f"{entry['operation']}: {entry['success']}")
+# Get error summary
+error_summary = handler.get_error_summary()
+if error_summary:
+    print(f"Error types encountered: {error_summary}")
 ```
 
 ## Design Principles
