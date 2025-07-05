@@ -62,7 +62,9 @@ logs/
 # Temporary files
 *.tmp
 *.temp
-test_example.txt
+*.txt
+test_basic.py
+test_*.py
 
 # Project specific
 operation_logs/
