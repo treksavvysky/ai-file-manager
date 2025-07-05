@@ -13,16 +13,29 @@ from typing import Union, List, Dict, Any, Optional, Tuple
 from datetime import datetime
 import fnmatch
 
-from .file_handler import FileHandler
-from .exceptions import (
-    FileManagerError,
-    PathValidationError,
-    FileOperationError,
-    FileNotFoundError,
-    SecurityError,
-    ConfigurationError,
-    convert_standard_exception
-)
+try:
+    from .file_handler import FileHandler
+    from .exceptions import (
+        FileManagerError,
+        PathValidationError,
+        FileOperationError,
+        FileNotFoundError,
+        SecurityError,
+        ConfigurationError,
+        convert_standard_exception
+    )
+except ImportError:
+    # Handle direct execution
+    from file_handler import FileHandler
+    from exceptions import (
+        FileManagerError,
+        PathValidationError,
+        FileOperationError,
+        FileNotFoundError,
+        SecurityError,
+        ConfigurationError,
+        convert_standard_exception
+    )
 
 
 class WorkspaceManager:

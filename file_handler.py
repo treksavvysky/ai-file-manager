@@ -12,17 +12,31 @@ from typing import Union, Optional, List, Dict, Any
 from datetime import datetime
 
 # Import custom exceptions
-from .exceptions import (
-    FileManagerError,
-    PathValidationError,
-    FileOperationError,
-    FileNotFoundError,
-    InvalidFileTypeError,
-    FileSizeError,
-    EncodingError,
-    SecurityError,
-    convert_standard_exception
-)
+try:
+    from .exceptions import (
+        FileManagerError,
+        PathValidationError,
+        FileOperationError,
+        FileNotFoundError,
+        InvalidFileTypeError,
+        FileSizeError,
+        EncodingError,
+        SecurityError,
+        convert_standard_exception
+    )
+except ImportError:
+    # Handle direct execution
+    from exceptions import (
+        FileManagerError,
+        PathValidationError,
+        FileOperationError,
+        FileNotFoundError,
+        InvalidFileTypeError,
+        FileSizeError,
+        EncodingError,
+        SecurityError,
+        convert_standard_exception
+    )
 
 
 class FileHandler:
@@ -67,7 +81,11 @@ class FileHandler:
             PathValidationError: If path is invalid or violates security constraints
         """
         try:
-            path = Path(file_path).resolve()
+            # If we have a base directory and the path is relative, resolve against base directory
+            if self.base_directory and not Path(file_path).is_absolute():
+                path = (self.base_directory / file_path).resolve()
+            else:
+                path = Path(file_path).resolve()
         except (OSError, ValueError) as e:
             raise PathValidationError(f"Invalid path format: {file_path}", file_path) from e
         
@@ -197,7 +215,10 @@ class FileHandler:
         try:
             # Check if file already exists when overwrite is disabled
             if not overwrite and path.exists():
-                from .exceptions import FileAlreadyExistsError
+                try:
+                    from .exceptions import FileAlreadyExistsError
+                except ImportError:
+                    from exceptions import FileAlreadyExistsError
                 raise FileAlreadyExistsError(f"File already exists: {path}", path)
             
             # Validate content size

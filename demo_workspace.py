@@ -81,7 +81,7 @@ def demo_project_setup(workspace: WorkspaceManager):
         workspace.create_directory(directory)
         print(f"  ✓ Created: {directory}")
     
-    # Create some initial files
+    # Create some initial files (using relative paths within workspace)
     initial_files = {
         "README.md": "# AI Agent Project\n\nThis is an AI agent workspace.",
         "src/main.py": "#!/usr/bin/env python3\n# Main AI agent entry point\nprint('AI Agent starting...')",
@@ -174,7 +174,7 @@ def demo_file_organization(workspace: WorkspaceManager):
     workspace.create_directory("temp_work")
     print("\nOrganizing temporary files...")
     
-    temp_pattern_files = workspace.find_files("temp_*", recursive=False)
+    temp_pattern_files = workspace.find_files("temp_*", recursive=False, file_types=['file'])
     for file in temp_pattern_files:
         old_path = file['relative_path']
         new_path = f"temp_work/{file['name']}"
