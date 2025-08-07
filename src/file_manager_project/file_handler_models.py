@@ -3,7 +3,7 @@ Pydantic models for FileHandler requests and responses.
 """
 from typing import Optional, List, Dict, Any, Union
 from typing_extensions import TypeAlias # For Python < 3.10
-from pydantic import BaseModel, Field, FilePath as PydanticFilePath # Renamed to avoid conflict
+from pydantic import BaseModel, Field, FilePath as PydanticFilePath, DirectoryPath as PydanticDirPath # Renamed to avoid conflict
 from datetime import datetime
 from enum import Enum
 
@@ -43,7 +43,7 @@ class BaseResponse(BaseModel):
 
 # read_file
 class ReadFileRequest(BaseRequest):
-    file_path: PydanticFilePath = Field(..., description="Path to the file to read.")
+    file_path: str = Field(..., description="Path to the file to read.")
     encoding: str = Field('utf-8', description="File encoding.")
 
 class ReadFileResponse(BaseResponse):
@@ -54,7 +54,7 @@ class ReadFileResponse(BaseResponse):
 
 # write_file
 class WriteFileRequest(BaseRequest):
-    file_path: PydanticFilePath = Field(..., description="Path to the file to write.")
+    file_path: str = Field(..., description="Path to the file to write.")
     content: str = Field(..., description="Content to write to the file.")
     encoding: str = Field('utf-8', description="File encoding.")
     overwrite: bool = Field(True, description="Whether to overwrite the file if it already exists.")
@@ -66,7 +66,7 @@ class WriteFileResponse(BaseResponse):
 
 # append_file
 class AppendFileRequest(BaseRequest):
-    file_path: PydanticFilePath = Field(..., description="Path to the file to append to.")
+    file_path: str = Field(..., description="Path to the file to append to.")
     content: str = Field(..., description="Content to append.")
     encoding: str = Field('utf-8', description="File encoding.")
 
@@ -76,7 +76,7 @@ class AppendFileResponse(BaseResponse):
 
 # file_exists
 class FileExistsRequest(BaseRequest):
-    file_path: PydanticFilePath = Field(..., description="Path to the file to check for existence.")
+    file_path: str = Field(..., description="Path to the file to check for existence.")
 
 class FileExistsResponse(BaseResponse):
     exists: bool = Field(..., description="True if the file exists, False otherwise.")
@@ -85,7 +85,7 @@ class FileExistsResponse(BaseResponse):
 
 # get_file_info
 class GetFileInfoRequest(BaseRequest):
-    file_path: PydanticFilePath = Field(..., description="Path to the file to get information for.")
+    file_path: str = Field(..., description="Path to the file to get information for.")
 
 class FileInfo(BaseModel):
     name: str = Field(..., description="Name of the file or directory.")
@@ -149,7 +149,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Model for FileHandler constructor arguments, using pydantic-settings
 class FileHandlerSettings(BaseSettings):
-    base_directory: Optional[PydanticFilePath] = Field(default=None, description="Optional base directory to restrict operations to. If set, all file paths will be relative to this directory.")
+    base_directory: Optional[PydanticDirPath] = Field(default=None, description="Optional base directory to restrict operations to. If set, all file paths will be relative to this directory.")
     max_file_size: int = Field(default=10 * 1024 * 1024, gt=0, description="Maximum file size in bytes (default: 10MB).")
 
     model_config = SettingsConfigDict(

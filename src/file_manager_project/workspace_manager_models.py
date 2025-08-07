@@ -76,7 +76,6 @@ class WorkspaceManagerSettings(BaseSettings):
         extra='ignore'
     )
 
-
 # list_directory
 class ItemInfoBase(BaseModel):
     name: str = Field(..., description="Name of the file or directory.")

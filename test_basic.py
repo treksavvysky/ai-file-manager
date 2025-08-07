@@ -11,9 +11,27 @@ import tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 try:
-    from workspace_manager import WorkspaceManager
-    from file_handler import FileHandler
-    from exceptions import FileManagerError
+    from src.file_manager_project.workspace_manager import WorkspaceManager, WorkspaceManagerSettings
+    from src.file_manager_project.file_handler import FileHandlerSettings
+    from src.file_manager_project.exceptions import FileManagerError, PathValidationError, FileSizeError, ConfigurationError
+
+    # Import Pydantic models for requests
+    from src.file_manager_project.file_handler_models import (
+        ReadFileRequest as FH_ReadFileRequest,
+        WriteFileRequest as FH_WriteFileRequest,
+        AppendFileRequest as FH_AppendFileRequest,
+        GetFileInfoRequest as FH_GetFileInfoRequest,
+        GetOperationLogRequest as FH_GetOperationLogRequest,
+        GetErrorSummaryRequest as FH_GetErrorSummaryRequest,
+        LogSortField as FH_LogSortField
+    )
+    from src.file_manager_project.file_handler_models import BaseResponse as FH_BaseResponse
+    from src.file_manager_project.workspace_manager_models import (
+        ListDirectoryRequest, CreateDirectoryRequest, CopyItemRequest, MoveItemRequest,
+        DeleteItemRequest, FindItemsRequest, GetWorkspaceInfoRequest,
+        CleanupEmptyDirectoriesRequest, GetWorkspaceOperationLogRequest, WorkspaceItemType,
+        BaseResponse as WM_BaseResponse
+    )
     print("✅ All imports successful")
 except ImportError as e:
     print(f"❌ Import error: {e}")
@@ -28,13 +46,19 @@ def test_basic_functionality():
         print(f"📁 Temp workspace: {temp_dir}")
         
         try:
-            # Test 1: Initialize workspace
-            workspace = WorkspaceManager(temp_dir)
+            ws_settings = WorkspaceManagerSettings(
+                workspace_root=temp_dir, # type: ignore # DirectoryPath expects existing dir, WorkspaceManager handles creation
+                max_depth=5,
+                allowed_extensions=['.py', '.txt', '.md', '.json', '.csv']
+            )
+            workspace = WorkspaceManager(settings=ws_settings)
             print(f"✅ Workspace initialized at: {workspace.workspace_root}")
             print(f"✅ FileHandler base directory: {workspace.file_handler.base_directory}")
             
             # Test 2: Create a directory
-            workspace.create_directory("test_dir")
+            test_dir = CreateDirectoryRequest(
+                relative_path="testing/test_dir")
+            workspace.create_directory(test_dir)
             print("✅ Directory created successfully")
             
             # Test 3: Write a file using relative path
