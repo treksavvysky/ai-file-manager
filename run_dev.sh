@@ -39,7 +39,7 @@ fi
 # Start Backend Server
 echo -e "${BLUE}Starting FastAPI Backend Server...${NC}"
 cd backend
-python3 main.py &
+/usr/local/bin/python3 main.py &
 BACKEND_PID=$!
 cd ..
 

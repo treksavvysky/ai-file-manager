@@ -47,7 +47,36 @@ export default function UploadModal({ workspace, path, onClose, onUpload }: Uplo
     } finally {
       setUploading(false);
     }
-  };            ref={fileInputRef}
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md shadow-2xl border border-gray-800">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Upload Files</h2>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="mb-4">
+          <p className="text-sm text-gray-500">
+            Upload to: {path || '/'} in {workspace.name}
+          </p>
+        </div>
+
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors"
+        >
+          <Upload size={48} className="mx-auto mb-2 text-gray-600" />
+          <p className="text-gray-400">Click to select files</p>
+          <p className="text-sm text-gray-600 mt-1">or drag and drop</p>
+          <input
+            ref={fileInputRef}
             type="file"
             multiple
             onChange={handleFileSelect}

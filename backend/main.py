@@ -25,13 +25,17 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.file_manager_project.workspace_manager import WorkspaceManager, WorkspaceManagerSettings
 from src.file_manager_project.file_handler_models import (
-    WriteFileRequest, ReadFileRequest, DeleteFileRequest,
-    WriteFileResponse, ReadFileResponse, DeleteFileResponse
+    WriteFileRequest, ReadFileRequest,
+    WriteFileResponse, ReadFileResponse
 )
 from src.file_manager_project.workspace_manager_models import (
     CreateDirectoryRequest, ListDirectoryRequest, MoveItemRequest,
     CreateDirectoryResponse, ListDirectoryResponse, MoveItemResponse
 )
+
+# Import additional models that don't exist in the original
+from pathlib import Path
+import os
 # Activity tracking for AI agents
 class ActivityTracker:
     def __init__(self, max_size: int = 100):
@@ -233,19 +237,22 @@ async def delete_file(
     if workspace_name not in workspace_managers:
         raise HTTPException(status_code=404, detail="Workspace not active")
     
-    manager = workspace_managers[workspace_name]
-    request = DeleteFileRequest(file_path=file_path)
+    workspace_path = WORKSPACES_ROOT / workspace_name
+    full_path = workspace_path / file_path
     
     try:
-        response = manager.file_handler.delete_file(request)
-        
-        if agent_id:
-            await activity_tracker.log_activity(
-                agent_id, "DELETE_FILE", 
-                {"workspace": workspace_name, "file": file_path}
-            )
-        
-        return response.model_dump()
+        if full_path.exists() and full_path.is_file():
+            full_path.unlink()
+            
+            if agent_id:
+                await activity_tracker.log_activity(
+                    agent_id, "DELETE_FILE", 
+                    {"workspace": workspace_name, "file": file_path}
+                )
+            
+            return {"success": True, "message": "File deleted", "file_path": file_path}
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
