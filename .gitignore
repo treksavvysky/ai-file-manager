@@ -62,9 +62,8 @@ logs/
 # Temporary files
 *.tmp
 *.temp
-*.txt
-test_basic.py
-test_*.py
+# Keep test files
+# test_*.py
 
 # Project specific
 operation_logs/
