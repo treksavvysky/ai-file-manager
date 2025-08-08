@@ -47,7 +47,7 @@ export default function FileManager({ workspace }: FileManagerProps) {
   const handleDelete = async (item: FileItem) => {
     try {
       await api.delete(`/workspaces/${workspace.name}/files/delete`, {
-        params: { file_path: item.path }
+        params: { file_path: item.relative_path }
       });
       toast.success(`Deleted ${item.name}`);
       loadDirectory(currentPath);
@@ -59,7 +59,7 @@ export default function FileManager({ workspace }: FileManagerProps) {
   const handleDownload = async (item: FileItem) => {
     try {
       const response = await api.get(`/workspaces/${workspace.name}/download`, {
-        params: { file_path: item.path },
+        params: { file_path: item.relative_path },
         responseType: 'blob'
       });
       
@@ -165,15 +165,15 @@ export default function FileManager({ workspace }: FileManagerProps) {
           </div>
         ) : (
           <div className="grid gap-2">
-            {items.map((item) => {
+            {items.map((item, index) => {
               const Icon = getFileIcon(item);
               return (
                 <div
-                  key={item.path}
+                  key={item.relative_path || `${item.name}-${index}`}
                   className="group flex items-center px-3 py-2 rounded-lg hover:bg-gray-800/50 cursor-pointer transition-colors"
                   onClick={() => {
                     if (item.type === 'directory') {
-                      setCurrentPath(item.path);
+                      setCurrentPath(item.relative_path || item.name);
                     } else {
                       setEditingFile(item);
                     }

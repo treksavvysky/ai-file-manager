@@ -6,11 +6,13 @@ export interface Workspace {
 
 export interface FileItem {
   name: string;
-  path: string;
+  relative_path: string;  // Changed from 'path' to match backend
   type: 'file' | 'directory';
-  size?: number;
-  modified?: string;
+  size_bytes?: number;    // Changed from 'size' to match backend
+  modified_at?: string;    // Changed from 'modified' to match backend
   extension?: string;
+  is_hidden?: boolean;     // Added from backend
+  permissions?: string;    // Added from backend
 }
 
 export interface AgentActivity {

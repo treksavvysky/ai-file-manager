@@ -25,7 +25,7 @@ export default function FileEditor({ file, workspace, onClose, onSave }: FileEdi
   const loadFile = async () => {
     try {
       const response = await api.get(`/workspaces/${workspace.name}/files/read`, {
-        params: { file_path: file.path }
+        params: { file_path: file.relative_path }
       });
       setContent(response.data.content || '');
     } catch (error) {
@@ -38,7 +38,7 @@ export default function FileEditor({ file, workspace, onClose, onSave }: FileEdi
     setSaving(true);
     try {
       await api.post(`/workspaces/${workspace.name}/files/create`, {
-        file_path: file.path,
+        file_path: file.relative_path,
         content
       });
       toast.success('File saved successfully');
@@ -57,7 +57,7 @@ export default function FileEditor({ file, workspace, onClose, onSave }: FileEdi
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
           <div>
             <h2 className="text-lg font-semibold">{file.name}</h2>
-            <p className="text-sm text-gray-500">{file.path}</p>
+            <p className="text-sm text-gray-500">{file.relative_path}</p>
           </div>
           <div className="flex items-center space-x-2">
             <button

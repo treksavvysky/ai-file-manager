@@ -161,7 +161,7 @@ async def list_files(
         raise HTTPException(status_code=404, detail="Workspace not active")
     
     manager = workspace_managers[workspace_name]
-    request = ListDirectoryRequest(directory_path=path or ".")
+    request = ListDirectoryRequest(relative_path=path or ".")
     
     try:
         response = manager.list_directory(request)
@@ -268,7 +268,7 @@ async def move_file(
         raise HTTPException(status_code=404, detail="Workspace not active")
     
     manager = workspace_managers[workspace_name]
-    request = MoveItemRequest(source_path=source_path, destination_path=destination_path)
+    request = MoveItemRequest(source_relative_path=source_path, destination_relative_path=destination_path)
     
     try:
         response = manager.move_item(request)
@@ -293,7 +293,7 @@ async def create_directory(
         raise HTTPException(status_code=404, detail="Workspace not active")
     
     manager = workspace_managers[workspace_name]
-    request = CreateDirectoryRequest(directory_path=directory_path)
+    request = CreateDirectoryRequest(relative_path=directory_path)
     
     try:
         response = manager.create_directory(request)
